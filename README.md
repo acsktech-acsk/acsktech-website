@@ -1,60 +1,53 @@
-# ACSKTech 6-Page Website
+# ACSKTech website — clean responsive build
 
-Static HTML/CSS/JavaScript website for ACSKTech Salesforce Consultancy Services.
+This folder contains the six-page static website and a Cloudflare Pages Function for contact/feedback email delivery.
 
 ## Pages
-1. Home (`index.html`)
-2. Services (`services.html`)
-3. Core Values (`values.html`)
-4. Esteemed Clients (`clients.html`)
-5. Feedback (`feedback.html`)
-6. Contact (`contact.html`)
+- `index.html` — Home
+- `services.html` — Services
+- `values.html` — Core Values
+- `clients.html` — Esteemed Clients & Partnerships
+- `feedback.html` — Feedback form
+- `contact.html` — Contact/enquiry form
 
-## Contact form setup (Cloudflare Pages + Resend)
+## Why the layout is corrected
+- The header uses a properly cropped square icon rather than the full wordmark image.
+- The hero uses CSS artwork only, so a large logo image cannot overlap the headline.
+- Navigation and card grids have responsive breakpoints; a working mobile menu is included.
+- All pages share the same header, footer, spacing system and styles.
 
-The contact form now posts to the Cloudflare Pages Function at `/api/contact`. It will **not send email until the environment variables and sender domain are configured**.
+## Publish on Cloudflare Pages
+1. Extract this ZIP and upload/commit the files at the root of the GitHub repository. The `functions/` directory must be at the repository root beside `index.html`.
+2. In Cloudflare Pages, make sure the project is connected to that repository and its production branch is the branch you deploy.
+3. Trigger a new deployment and wait for the deployment to complete before testing the production domain.
+4. Keep `acsktech.in` connected to the existing Pages project. Do not delete or replace existing DNS records unless you have confirmed the correct Pages target.
 
-1. Create/sign in to Resend at https://resend.com/.
-2. Add and verify the sending domain `acsktech.in` in Resend. Add the exact DNS records Resend shows to the authoritative DNS provider for your domain. Do not delete or replace existing website or mail records.
-3. In Cloudflare, open **Workers & Pages → your Pages project → Settings → Variables and Secrets** (wording may vary).
-4. Add these variables for **Production**:
-   - `RESEND_API_KEY` — create this as a **secret**, not a plain-text variable.
+## Enable email delivery (required for automatic email)
+The form uses the Pages Function route `/api/contact`. It sends email using Resend. The static pages can be deployed without these settings, but automatic email will return a helpful configuration message until these steps are complete.
+
+1. Create/sign in to a Resend account.
+2. Verify a sending domain you control in Resend (recommended: `acsktech.in`) by adding the exact DNS records Resend provides. Do not guess the DNS records; copy them from Resend.
+3. Create a Resend API key.
+4. In Cloudflare Dashboard → Workers & Pages → your Pages project → Settings → Variables and Secrets, add these **secrets/variables for Production**:
+   - `RESEND_API_KEY` — secret, the Resend API key
    - `CONTACT_TO_EMAIL` — `acsktech@gmail.com`
-   - `CONTACT_FROM_EMAIL` — `ACSKTech Website <website@acsktech.in>` (use a sender address on the verified domain).
-5. Add the same variables to **Preview** only if you want the form to send from preview deployments. Prefer leaving email disabled on previews to avoid test submissions.
-6. Trigger a new deployment after adding the variables.
-7. Test the form on `https://acsktech.in/contact` with a real test enquiry. Confirm it arrives in Gmail and check Spam/Promotions if necessary.
+   - `CONTACT_FROM_EMAIL` — a sender on the verified domain, for example `ACSKTech Website <website@acsktech.in>`
+5. If you use a separate Preview environment, configure the same variables there with suitable test values.
+6. Redeploy after adding/changing the variables, then submit a real test enquiry and confirm it arrives in Gmail. Check Spam and the Resend email logs if needed.
 
-Never place the Resend API key in `script.js`, HTML, or any publicly accessible file. The function validates inputs, limits payload size, includes a basic honeypot, and replies with a success/error message. This is basic spam mitigation, not a full CAPTCHA or rate-limit system.
+**Important:** Never put `RESEND_API_KEY` in `script.js`, HTML, a public repository, or any client-side file. Only add it as a Cloudflare secret. Email delivery cannot be fully activated from a ZIP alone because the private API key and sender-domain verification belong to your accounts.
 
-Until the Resend setup is complete, the form intentionally displays a configuration/error message and offers the direct email fallback. Do not treat a successful browser-side submit as proof of email delivery; verify receipt in Gmail.
+## Suggested subdomains (optional)
+- `staging.acsktech.in` — test changes separately before production.
+- `portal.acsktech.in` — reserve for a future client portal.
 
-## Cloudflare Pages deployment
+Create/configure these only after you decide what should serve them. For a staging copy, create a separate Cloudflare Pages project or use a dedicated preview branch/domain. For a future portal, point it to the actual portal service when it exists. Do not point both names at production unless that is intentional.
 
-This project uses a root-level static site and a Pages Function. In your existing Cloudflare Pages project:
-- Framework preset: **None**
-- Build command: leave blank
-- Build output directory: `/` or the project root as supported by the Pages setup
-- Ensure `functions/api/contact.js` is included in the repository root.
-
-Commit/push these files to the connected GitHub branch, then wait for the Pages deployment to complete. Test the production domain after deployment.
-
-## Subdomains (configure in Cloudflare Pages; not configured automatically by these files)
-
-Keep `acsktech.in` as production.
-
-### `staging.acsktech.in`
-Recommended: create a `staging` branch in GitHub and configure a Pages preview deployment for that branch. In the Pages project, open **Custom domains** and add `staging.acsktech.in` to the branch/preview deployment if the dashboard offers branch-specific custom domains. Follow the exact DNS instructions Cloudflare displays. If branch-specific domains are not available in your setup, create a separate Pages project connected to the `staging` branch instead.
-
-### `portal.acsktech.in`
-Reserve this for a future portal. Do not point it at the production site unless that is the intended experience. When ready, create a separate app/Pages project for the portal, add `portal.acsktech.in` as its custom domain, and apply the DNS records Cloudflare instructs you to add.
-
-Important: add custom domains through **Workers & Pages → your project → Custom domains** as well as following the DNS setup. A DNS record by itself may not activate a Cloudflare Pages custom domain. Preserve all existing MX/TXT mail records.
-
-## Logo and branding
-- `acsktech-logo.jpeg` is the supplied full logo.
-- `acsktech-logo-mark.jpg` is a cropped mark used in the site navigation and favicon.
-- Client names and testimonials should only be published once approved for public use.
-
-## Domain
-The existing `CNAME` file contains `acsktech.in`. Keep it only if your deployment workflow requires it; Cloudflare Pages custom-domain configuration is managed in the Cloudflare dashboard.
+## Smoke test checklist
+- Open each of the six pages on desktop and mobile.
+- Check the logo, nav links, CTA buttons and footer links.
+- Open the mobile menu and navigate to another page.
+- Submit the contact form with valid details and check for the success message and received email.
+- Submit an invalid email to confirm browser validation.
+- Repeat with the feedback form.
+- Confirm the deployed `https://acsktech.in` and `https://www.acsktech.in` behavior in Cloudflare Pages/custom-domain settings.

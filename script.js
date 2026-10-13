@@ -1,46 +1,52 @@
-document.querySelectorAll('[data-year]').forEach(e => e.textContent = new Date().getFullYear());
+document.querySelectorAll('[data-year]').forEach((node) => { node.textContent = String(new Date().getFullYear()); });
 
-const path = location.pathname.split('/').pop() || 'index.html';
-document.querySelectorAll('nav a').forEach(a => {
-  if (a.getAttribute('href') === path || (path === '' && a.getAttribute('href') === 'index.html')) {
-    a.classList.add('active');
-  }
-});
+const menuButton = document.querySelector('.menu-toggle');
+const primaryNav = document.querySelector('#primary-nav');
+if (menuButton && primaryNav) {
+  menuButton.addEventListener('click', () => {
+    const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.setAttribute('aria-expanded', String(!isOpen));
+    primaryNav.classList.toggle('is-open', !isOpen);
+  });
+  primaryNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+    menuButton.setAttribute('aria-expanded', 'false');
+    primaryNav.classList.remove('is-open');
+  }));
+}
 
-// Contact form posts to a Cloudflare Pages Function. No email credentials belong in browser code.
-const contactForm = document.querySelector('#contact-form');
-if (contactForm) {
-  const status = document.querySelector('#contact-status');
-  const submit = document.querySelector('#contact-submit');
-
-  contactForm.addEventListener('submit', async (event) => {
+// Contact and feedback forms post to a Cloudflare Pages Function. Never put email API keys in browser code.
+document.querySelectorAll('[data-email-form]').forEach((form) => {
+  const status = form.querySelector('.form-status');
+  const submit = form.querySelector('button[type="submit"]');
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!form.reportValidity()) return;
     status.textContent = '';
     status.className = 'form-status';
-
-    const data = Object.fromEntries(new FormData(contactForm).entries());
-    if (data.company_website) return; // honeypot: silently ignore automated spam
-
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (data.company_website) { status.textContent = 'Thank you.'; status.classList.add('success'); return; }
+    const originalText = submit.textContent;
     submit.disabled = true;
     submit.textContent = 'Sending…';
-
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, kind: form.dataset.formKind || 'enquiry' })
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'We could not send your enquiry. Please try again.');
-      contactForm.reset();
-      status.textContent = 'Thank you! Your enquiry has been sent. We will get back to you soon.';
+      if (!response.ok) throw new Error(result.error || 'We could not send your message. Please email acsktech@gmail.com directly.');
+      form.reset();
+      status.textContent = form.dataset.formKind === 'feedback'
+        ? 'Thank you — your feedback has been sent to the ACSKTech team.'
+        : 'Thank you — your enquiry has been sent. The ACSKTech team will get back to you.';
       status.classList.add('success');
     } catch (error) {
-      status.textContent = error.message || 'Something went wrong. Please email acsktech@gmail.com directly.';
+      status.textContent = `${error.message || 'Message delivery is temporarily unavailable.'} You can contact us at acsktech@gmail.com.`;
       status.classList.add('error');
     } finally {
       submit.disabled = false;
-      submit.textContent = 'Send Enquiry';
+      submit.textContent = originalText;
     }
   });
-}
+});
