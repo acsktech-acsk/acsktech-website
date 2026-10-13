@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AcskTech | Contact</title><meta name="description" content="AcskTech Salesforce Consultancy Services — accelerating digital transformation through certified Salesforce expertise.">
-<link rel="stylesheet" href="styles.css"></head><body>
+<link rel="stylesheet" href="styles.css"><link rel="icon" type="image/jpeg" href="acsktech-logo-mark.jpg"></head><body>
 <div class="topbar"><div class="container"><span>AcskTech • Salesforce Consultancy Services</span><span>acsktech@gmail.com • acsktech.in</span></div></div>
 <header><div class="container nav">
-<a class="logo" href="index.html"><div class="logo-mark">ϟ</div><div><strong>AcskTech</strong><span>Salesforce Consultancy Services</span></div></a>
+<a class="logo" href="index.html"><img class="logo-mark-img" src="acsktech-logo-mark.jpg" alt="" aria-hidden="true"><div><strong>AcskTech</strong><span>Salesforce Consultancy Services</span></div></a>
 <nav><a href="index.html" class="">Home</a><a href="services.html" class="">Services</a><a href="values.html" class="">Core Values</a><a href="clients.html" class="">Clients</a><a href="feedback.html" class="">Feedback</a><a href="contact.html" class="active">Contact</a></nav><a class="btn btn-primary mobile" href="contact.html">Contact</a>
 </div></header>
 <main>
@@ -16,12 +16,15 @@
 <div class="contact-item"><strong>Services</strong><span>Consulting • Implementation • Development • Integration • Analytics • Support</span></div>
 </div>
 <div class="card"><h2 style="font-size:28px;color:var(--navy);margin-bottom:18px">Send an Enquiry</h2>
-<form action="mailto:acsktech@gmail.com" method="post" enctype="text/plain">
-<label>Name<input name="Name" required></label>
-<label>Business Email<input type="email" name="Email" required></label>
-<label>Service<select name="Service"><option>Salesforce Consulting</option><option>Implementation</option><option>Customization & Development</option><option>Integration</option><option>Data & Analytics</option><option>Training</option><option>Support & Managed Services</option><option>Other</option></select></label>
-<label>Message<textarea name="Message" required placeholder="Tell us briefly about your requirement..."></textarea></label>
-<button class="btn btn-primary" type="submit">Send Enquiry</button>
+<form id="contact-form">
+<label for="contact-name">Name<input id="contact-name" name="name" autocomplete="name" maxlength="120" required></label>
+<label for="contact-email">Business Email<input id="contact-email" type="email" name="email" autocomplete="email" maxlength="254" required></label>
+<label for="contact-service">Service<select id="contact-service" name="service" required><option>Salesforce Consulting</option><option>Implementation</option><option>Customization & Development</option><option>Integration</option><option>Data & Analytics</option><option>Training</option><option>Support & Managed Services</option><option>Other</option></select></label>
+<label for="contact-message">Message<textarea id="contact-message" name="message" maxlength="5000" required placeholder="Tell us briefly about your requirement..."></textarea></label>
+<div class="form-trap" aria-hidden="true"><label for="company-website">Leave this field empty<input id="company-website" name="company_website" tabindex="-1" autocomplete="off"></label></div>
+<button class="btn btn-primary" id="contact-submit" type="submit">Send Enquiry</button>
+<p id="contact-status" class="form-status" role="status" aria-live="polite"></p>
+<p class="form-note">Your details will be used only to respond to your enquiry.</p>
 </form></div>
 </div></section>
 </main>

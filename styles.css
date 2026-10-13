@@ -14,7 +14,11 @@ a{text-decoration:none;color:inherit}
 header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid #e8f0f8}
 .nav{height:78px;display:flex;align-items:center;justify-content:space-between;gap:25px}
 .logo{display:flex;align-items:center;gap:11px;font-weight:800;color:var(--navy)}
-.logo-mark{width:48px;height:48px;border-radius:50% 50% 45% 45%;background:linear-gradient(145deg,#14d7ef,#087cf2);display:grid;place-items:center;color:white;font-size:24px;box-shadow:0 8px 22px rgba(8,124,242,.25)}
+.logo-mark-img{width:54px;height:54px;object-fit:cover;object-position:center;border-radius:14px;flex:0 0 auto;box-shadow:0 8px 22px rgba(8,124,242,.12)}
+.form-trap{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.form-status{min-height:1.5em;font-weight:650;font-size:14px}
+.form-status.success{color:#137547}.form-status.error{color:#b42318}
+.form-note{font-size:12px;color:var(--muted)}
 .logo strong{font-size:25px;letter-spacing:-1px}.logo span{display:block;font-size:12px;color:#5b6d80;font-weight:600}
 nav{display:flex;gap:24px;align-items:center}nav a{font-weight:650;font-size:14px;color:#183b63;position:relative}nav a:hover,nav a.active{color:var(--blue)}nav a.active:after{content:"";position:absolute;left:0;right:0;bottom:-28px;height:3px;background:var(--blue);border-radius:3px}
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border-radius:10px;font-weight:750;border:1px solid transparent;cursor:pointer;transition:.2s}
