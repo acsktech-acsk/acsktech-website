@@ -12,6 +12,13 @@ if (menuButton && primaryNav) {
     menuButton.setAttribute('aria-expanded', 'false');
     primaryNav.classList.remove('is-open');
   }));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') {
+      menuButton.setAttribute('aria-expanded', 'false');
+      primaryNav.classList.remove('is-open');
+      menuButton.focus();
+    }
+  });
 }
 
 // Contact and feedback forms post to a Cloudflare Pages Function. Never put email API keys in browser code.
