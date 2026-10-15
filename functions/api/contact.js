@@ -2,19 +2,36 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status,
   headers: {
     "Content-Type": "application/json; charset=utf-8",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff"
+    "Cache-Control": "no-store, max-age=0",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer"
   }
 });
 
+const allowedServices = new Set([
+  "Salesforce Consulting", "Implementation & Configuration",
+  "Customization & Development", "Integration", "Data & Analytics",
+  "Training", "Support & Managed Services", "Other",
+  "Excellent", "Good", "Average", "Needs improvement"
+]);
+
 export async function onRequestPost({ request, env }) {
+  const origin = request.headers.get("Origin");
+  if (origin && !["https://acsktech.in", "https://www.acsktech.in"].includes(origin)) {
+    return json({ error: "Request origin is not allowed." }, 403);
+  }
   const contentType = request.headers.get("content-type") || "";
-  if (!contentType.toLowerCase().includes("application/json")) return json({ error: "Unsupported request format." }, 415);
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return json({ error: "Unsupported request format." }, 415);
+  }
+  const declaredLength = Number(request.headers.get("content-length") || 0);
+  if (declaredLength > 12000) return json({ error: "Your message is too long." }, 413);
 
   let data;
   try {
     const raw = await request.text();
-    if (raw.length > 12000) return json({ error: "Your message is too long." }, 413);
+    if (new TextEncoder().encode(raw).byteLength > 12000) return json({ error: "Your message is too long." }, 413);
     data = JSON.parse(raw);
   } catch {
     return json({ error: "Please check the form and try again." }, 400);
@@ -27,28 +44,22 @@ export async function onRequestPost({ request, env }) {
   const service = String(data.service || "").trim();
   const message = String(data.message || "").trim();
   const kind = String(data.kind || "enquiry").trim().toLowerCase();
-  if (!name || name.length > 120 || !email || email.length > 254 ||
+
+  if (!name || name.length > 120 || /[\r\n\u0000-\u001f]/.test(name) ||
+      !email || email.length > 254 || /[\r\n\u0000-\u001f]/.test(email) ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-      !service || service.length > 100 || !message || message.length > 5000 ||
+      !allowedServices.has(service) || !message || message.length > 5000 ||
       !["enquiry", "feedback"].includes(kind)) {
     return json({ error: "Please provide a valid name, email, selection and message." }, 400);
   }
-  if (!env.RESEND_API_KEY) {
-    return json({ error: "Email delivery is not configured yet. Please email acsktech@gmail.com directly." }, 503);
-  }
+  if (!env.RESEND_API_KEY) return json({ error: "Email delivery is not configured yet. Please email acsktech@gmail.com directly." }, 503);
 
   const recipient = env.CONTACT_TO_EMAIL || "acsktech@gmail.com";
   const sender = env.CONTACT_FROM_EMAIL || "ACSKTech Website <website@acsktech.in>";
   const subject = kind === "feedback" ? `Website feedback: ${service}` : `Website enquiry: ${service}`;
   const body = [
     kind === "feedback" ? "New feedback from the ACSKTech website" : "New enquiry from the ACSKTech website",
-    "",
-    `Name: ${name}`,
-    `Email: ${email}`,
-    `Type: ${service}`,
-    "",
-    "Message:",
-    message
+    "", `Name: ${name}`, `Email: ${email}`, `Type: ${service}`, "", "Message:", message
   ].join("\n");
 
   let response;
