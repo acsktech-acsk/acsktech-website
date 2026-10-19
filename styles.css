@@ -93,3 +93,30 @@ button:disabled{cursor:not-allowed;opacity:.7}
 .cookie-preference input{width:20px;min-height:20px;accent-color:#087cf2}
 .footer-bottom [data-cookie-settings-link]{white-space:nowrap}
 @media(max-width:760px){.cookie-banner-inner{align-items:stretch;flex-direction:column;gap:14px;padding:16px}.cookie-banner-actions{justify-content:flex-start}.cookie-button{flex:1 1 auto}.cookie-settings-panel{padding:0 16px 18px}.cookie-banner{font-size:14px}}
+
+/* ACSKTech service-led refresh: integrations, security and clearer capability cards */
+.integration-section{background:linear-gradient(180deg,#fff 0%,#f5faff 100%)}
+.integration-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.integration-card{position:relative;overflow:hidden;padding:28px;border:1px solid #dceaf7;border-radius:22px;background:rgba(255,255,255,.94);box-shadow:0 14px 34px rgba(8,56,111,.07);transition:transform .2s,box-shadow .2s,border-color .2s}
+.integration-card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--orange))}
+.integration-card:hover{transform:translateY(-4px);box-shadow:0 20px 42px rgba(8,56,111,.12);border-color:#b9d9f5}
+.integration-symbol{display:grid;place-items:center;width:48px;height:48px;margin-bottom:19px;border-radius:15px;background:linear-gradient(135deg,#e4f5ff,#e6fbff);color:var(--blue);font-size:24px;font-weight:850}
+.integration-card h3{font-size:20px;line-height:1.3;color:var(--navy);margin-bottom:10px}
+.integration-card p{color:var(--muted);font-size:14px;line-height:1.8;margin-bottom:17px}
+.integration-note{display:inline-flex;padding:6px 10px;border-radius:999px;background:#eef7ff;color:#255b89;font-size:11px;font-weight:800}
+.integration-link{font-size:13px;font-weight:850;color:var(--blue)}
+.integration-footnote{margin:20px auto 0;max-width:900px;color:#61758a;font-size:12px;text-align:center}
+.security-section{background:#072f5d;color:#fff}
+.security-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:56px;align-items:center}
+.security-layout h2{max-width:650px;font-size:clamp(29px,3.2vw,42px);line-height:1.18;letter-spacing:-1.2px;color:#fff;margin-bottom:16px}
+.security-layout>div:first-child>p:not(.eyebrow){color:#d4e7fa;max-width:650px;line-height:1.8;margin-bottom:25px}
+.security-layout .eyebrow{color:#8feaff}
+.security-points{border:1px solid rgba(255,255,255,.17);border-radius:20px;padding:8px 22px;background:rgba(255,255,255,.055)}
+.security-points>div{display:flex;align-items:flex-start;gap:16px;padding:17px 0;border-bottom:1px solid rgba(255,255,255,.14)}
+.security-points>div:last-child{border-bottom:0}
+.security-points>div>span{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;background:rgba(18,201,232,.15);color:#8feaff;font-size:12px;font-weight:900}
+.security-points p{margin:0;display:flex;flex-direction:column;gap:4px}
+.security-points strong{color:#fff;font-size:15px}
+.security-points small{color:#c5dcf2;font-size:13px;line-height:1.6}
+@media(max-width:850px){.integration-grid{grid-template-columns:1fr}.security-layout{grid-template-columns:1fr;gap:28px}.integration-card{padding:24px}}
+@media(prefers-reduced-motion:reduce){.integration-card{transition:none}.integration-card:hover{transform:none}}
