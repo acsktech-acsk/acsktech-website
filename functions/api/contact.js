@@ -52,6 +52,34 @@ export async function onRequestPost({ request, env }) {
       !["enquiry", "feedback"].includes(kind)) {
     return json({ error: "Please provide a valid name, email, selection and message." }, 400);
   }
+  const turnstileToken = String(data["cf-turnstile-response"] || "").trim();
+  if (!env.TURNSTILE_SECRET) return json({ error: "Form verification is not configured yet. Please email acsktech@gmail.com directly." }, 503);
+  if (!turnstileToken || turnstileToken.length > 2048) {
+    return json({ error: "Please complete the security check and try again." }, 400);
+  }
+
+  let verification;
+  try {
+    const verifyResponse = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET,
+        response: turnstileToken,
+        ...(request.headers.get("CF-Connecting-IP") ? { remoteip: request.headers.get("CF-Connecting-IP") } : {})
+      })
+    });
+    if (!verifyResponse.ok) throw new Error("Turnstile verification request failed");
+    verification = await verifyResponse.json();
+  } catch {
+    return json({ error: "The security check is temporarily unavailable. Please try again shortly." }, 502);
+  }
+
+  const expectedAction = kind === "feedback" ? "feedback" : "contact";
+  if (verification.success !== true || verification.action !== expectedAction || !["acsktech.in", "www.acsktech.in"].includes(String(verification.hostname || "").toLowerCase())) {
+    return json({ error: "Security verification failed. Please refresh the security check and try again." }, 403);
+  }
+
   if (!env.RESEND_API_KEY) return json({ error: "Email delivery is not configured yet. Please email acsktech@gmail.com directly." }, 503);
 
   const recipient = env.CONTACT_TO_EMAIL || "acsktech@gmail.com";

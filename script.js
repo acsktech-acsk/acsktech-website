@@ -44,11 +44,13 @@ document.querySelectorAll('[data-email-form]').forEach((form) => {
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'We could not send your message. Please email acsktech@gmail.com directly.');
       form.reset();
+      if (window.turnstile) window.turnstile.reset();
       status.textContent = form.dataset.formKind === 'feedback'
         ? 'Thank you — your feedback has been sent to the ACSKTech team.'
         : 'Thank you — your enquiry has been sent. The ACSKTech team will get back to you.';
       status.classList.add('success');
     } catch (error) {
+      if (window.turnstile) window.turnstile.reset();
       status.textContent = `${error.message || 'Message delivery is temporarily unavailable.'} You can contact us at acsktech@gmail.com.`;
       status.classList.add('error');
     } finally {
