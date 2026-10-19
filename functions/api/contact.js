@@ -75,7 +75,8 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "The security check is temporarily unavailable. Please try again shortly." }, 502);
   }
 
-  if (verification.success !== true || !["acsktech.in", "www.acsktech.in"].includes(String(verification.hostname || "").toLowerCase())) {
+  const expectedAction = kind === "feedback" ? "feedback" : "contact";
+  if (verification.success !== true || verification.action !== expectedAction || !["acsktech.in", "www.acsktech.in"].includes(String(verification.hostname || "").toLowerCase())) {
     return json({ error: "Security verification failed. Please refresh the security check and try again." }, 403);
   }
 
